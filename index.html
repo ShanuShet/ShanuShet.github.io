@@ -430,7 +430,6 @@ section { padding: 6rem 2rem; }
   border-color: var(--primary);
   color: var(--primary);
 }
-  
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
@@ -577,6 +576,73 @@ section { padding: 6rem 2rem; }
   color: var(--text-muted);
   margin-top: 0.2rem;
 }
+.certs-hint {
+  font-family: var(--font-code);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 0.6rem;
+}
+.cert-card { cursor: pointer; position: relative; }
+.cert-view {
+  position: absolute; top: 0.9rem; right: 1rem;
+  font-size: 0.9rem; color: var(--text-muted);
+  opacity: 0; transform: scale(0.7);
+  transition: all 0.25s;
+}
+.cert-card:hover .cert-view { opacity: 1; transform: scale(1); color: var(--primary); }
+.cert-card:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+/* ======= CERT MODAL ======= */
+.cert-modal-overlay {
+  position: fixed; inset: 0; z-index: 3000;
+  background: rgba(3,7,14,0.88);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s;
+  padding: 2rem;
+}
+.cert-modal-overlay.active { opacity: 1; pointer-events: auto; }
+.cert-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  max-width: 640px; width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.6rem;
+  position: relative;
+  box-shadow: 0 0 60px rgba(0,0,0,0.5), 0 0 40px var(--primary-glow);
+  transform: scale(0.92) translateY(10px);
+  transition: transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.cert-modal-overlay.active .cert-modal { transform: scale(1) translateY(0); }
+.cert-modal-close {
+  position: absolute; top: 1rem; right: 1rem;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--card-bg); border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; z-index: 1;
+}
+.cert-modal-close:hover { background: var(--primary-dim); color: var(--primary); border-color: var(--primary); transform: rotate(90deg); }
+.cert-modal-header { margin-bottom: 1rem; padding-right: 2.5rem; }
+.cert-modal-name { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: var(--text); margin-bottom: 0.2rem; }
+.cert-modal-issuer { font-family: var(--font-code); font-size: 0.78rem; color: var(--primary); }
+.cert-modal-imgwrap {
+  border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+.cert-modal-imgwrap img { display: block; width: 100%; height: auto; }
+.cert-modal-openbtn {
+  display: inline-block; margin-top: 1rem;
+  font-family: var(--font-code); font-size: 0.78rem;
+  color: var(--primary); text-decoration: none;
+  padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 6px;
+  transition: all 0.2s;
+}
+.cert-modal-openbtn:hover { background: var(--primary-dim); border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
 
 /* ======= ACHIEVEMENTS ======= */
 #achievements { background: var(--bg2); }
@@ -724,9 +790,93 @@ footer span { color: var(--primary); }
 .orb1 { width:300px;height:300px; background:rgba(14,165,233,0.12); top:20%;left:10%; animation-delay:0s; }
 .orb2 { width:200px;height:200px; background:rgba(124,58,237,0.1); top:60%;right:15%; animation-delay:2s; }
 .orb3 { width:150px;height:150px; background:rgba(56,189,248,0.08); bottom:20%;left:40%; animation-delay:4s; }
+
+/* ======= CUSTOM CURSOR GLOW ======= */
+.cursor-glow {
+  position: fixed; top: 0; left: 0;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--primary);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, background 0.2s, opacity 0.3s;
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+.cursor-dot {
+  position: fixed; top: 0; left: 0;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--neon);
+  box-shadow: 0 0 10px var(--neon-glow);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+.cursor-glow.grow { width: 50px; height: 50px; background: var(--primary-dim); }
+@media (hover: none) { .cursor-glow, .cursor-dot { display: none; } }
+
+/* ======= CODING AVATAR (hero mascot) ======= */
+.avatar-wrap {
+  position: absolute;
+  right: 4%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 300px;
+  z-index: 1;
+  animation: float 5s ease-in-out infinite;
+  cursor: pointer;
+  opacity: 0;
+  animation: fadeUp 0.9s 1.3s forwards, float 5s ease-in-out 2.2s infinite;
+}
+.avatar-wrap svg { width: 100%; height: auto; overflow: visible; }
+.avatar-blink { animation: avatarBlink 4.5s infinite; transform-origin: center; }
+@keyframes avatarBlink { 0%,92%,100%{transform:scaleY(1)} 95%{transform:scaleY(0.1)} }
+.avatar-screen-glow { animation: screenPulse 2.4s ease-in-out infinite; }
+@keyframes screenPulse { 0%,100%{opacity:0.55} 50%{opacity:1} }
+.avatar-code-line { animation: codeTyping 3s ease-in-out infinite; }
+.avatar-code-line:nth-child(2) { animation-delay: 0.3s; }
+.avatar-code-line:nth-child(3) { animation-delay: 0.6s; }
+@keyframes codeTyping { 0%,100%{opacity:0.3} 50%{opacity:1} }
+.avatar-chip {
+  animation: float 3.2s ease-in-out infinite;
+}
+.avatar-chip.c2 { animation-delay: 0.6s; animation-duration: 3.8s; }
+.avatar-chip.c3 { animation-delay: 1.1s; animation-duration: 4.4s; }
+.avatar-speech {
+  position: absolute;
+  top: -10px; right: 0;
+  transform: translateY(-100%) scale(0.85);
+  background: var(--card-bg);
+  border: 1px solid var(--primary);
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  font-family: var(--font-code);
+  font-size: 0.72rem;
+  color: var(--accent2);
+  white-space: nowrap;
+  box-shadow: 0 0 20px var(--primary-glow);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s;
+}
+.avatar-speech.show { opacity: 1; transform: translateY(-108%) scale(1); }
+.avatar-speech::after {
+  content:''; position:absolute; bottom:-6px; right: 24px;
+  width:10px; height:10px; background:var(--card-bg);
+  border-right:1px solid var(--primary); border-bottom:1px solid var(--primary);
+  transform: rotate(45deg);
+}
+@media (max-width: 1000px) {
+  .avatar-wrap { display: none; }
+}
 </style>
 </head>
 <body>
+<div class="cursor-glow" id="cursorGlow"></div>
+<div class="cursor-dot" id="cursorDot"></div>
 
 <!-- NAV -->
 <nav id="navbar">
@@ -747,6 +897,83 @@ footer span { color: var(--primary); }
   <div class="orb orb1"></div>
   <div class="orb orb2"></div>
   <div class="orb orb3"></div>
+
+  <div class="avatar-wrap" id="avatarWrap" aria-hidden="true">
+    <div class="avatar-speech" id="avatarSpeech">console.log("hi, I'm Priya 👋")</div>
+    <svg viewBox="0 0 300 320" xmlns="http://www.w3.org/2000/svg">
+      <!-- soft glow backdrop -->
+      <ellipse cx="150" cy="230" rx="110" ry="18" fill="rgba(14,165,233,0.15)"/>
+      <!-- chair / desk -->
+      <rect x="60" y="215" width="180" height="10" rx="5" fill="#1a2f4a"/>
+      <!-- body / hoodie -->
+      <path d="M95 320 L95 245 Q95 205 150 205 Q205 205 205 245 L205 320 Z" fill="#123354"/>
+      <path d="M95 320 L95 245 Q95 205 150 205 Q205 205 205 245 L205 320 Z" fill="url(#hoodieGrad)" opacity="0.6"/>
+      <!-- hoodie zip -->
+      <line x1="150" y1="212" x2="150" y2="270" stroke="#0a1a2c" stroke-width="3"/>
+      <!-- neck -->
+      <rect x="138" y="150" width="24" height="26" rx="8" fill="#e7ab84"/>
+      <!-- head -->
+      <circle cx="150" cy="120" r="42" fill="#f0bd94"/>
+      <!-- hair back / bun -->
+      <path d="M104 118 Q100 70 150 66 Q200 70 196 118 Q196 90 150 88 Q104 90 104 118 Z" fill="#241a2e"/>
+      <circle cx="150" cy="58" r="16" fill="#241a2e"/>
+      <!-- hair front fringe -->
+      <path d="M110 108 Q112 82 150 80 Q188 82 190 108 Q170 96 150 96 Q130 96 110 108 Z" fill="#2c2038"/>
+      <!-- ears -->
+      <circle cx="106" cy="122" r="6" fill="#e7ab84"/>
+      <circle cx="194" cy="122" r="6" fill="#e7ab84"/>
+      <!-- glasses -->
+      <g stroke="#0ea5e9" stroke-width="2.5" fill="rgba(14,165,233,0.08)">
+        <rect x="118" y="112" width="26" height="20" rx="7"/>
+        <rect x="156" y="112" width="26" height="20" rx="7"/>
+        <line x1="144" y1="120" x2="156" y2="120"/>
+      </g>
+      <!-- eyes (blink) -->
+      <g class="avatar-blink">
+        <circle cx="131" cy="122" r="2.6" fill="#1a1a1a"/>
+        <circle cx="169" cy="122" r="2.6" fill="#1a1a1a"/>
+      </g>
+      <!-- smile -->
+      <path d="M136 138 Q150 148 164 138" stroke="#8a4b30" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <!-- blush -->
+      <circle cx="122" cy="132" r="5" fill="#f2957a" opacity="0.35"/>
+      <circle cx="178" cy="132" r="5" fill="#f2957a" opacity="0.35"/>
+      <!-- arms to laptop -->
+      <path d="M108 250 Q120 275 150 278" stroke="#123354" stroke-width="16" stroke-linecap="round" fill="none"/>
+      <path d="M192 250 Q180 275 150 278" stroke="#123354" stroke-width="16" stroke-linecap="round" fill="none"/>
+      <!-- laptop base -->
+      <rect x="108" y="272" width="84" height="8" rx="3" fill="#0d1b2e"/>
+      <!-- laptop screen -->
+      <rect x="118" y="228" width="64" height="46" rx="4" fill="#0a1420" stroke="#0ea5e9" stroke-width="1.5"/>
+      <g class="avatar-screen-glow">
+        <rect x="123" y="234" width="30" height="3" rx="1.5" fill="#38bdf8" class="avatar-code-line"/>
+        <rect x="123" y="241" width="44" height="3" rx="1.5" fill="#0ea5e9" class="avatar-code-line"/>
+        <rect x="123" y="248" width="22" height="3" rx="1.5" fill="#7dd3fc" class="avatar-code-line"/>
+        <rect x="123" y="255" width="36" height="3" rx="1.5" fill="#38bdf8" class="avatar-code-line"/>
+        <rect x="123" y="262" width="16" height="3" rx="1.5" fill="#0ea5e9" class="avatar-code-line"/>
+      </g>
+      <!-- floating tech chips -->
+      <g class="avatar-chip" transform="translate(40,80)">
+        <rect width="34" height="34" rx="8" fill="rgba(124,58,237,0.15)" stroke="#a78bfa" stroke-width="1.2"/>
+        <text x="17" y="22" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#a78bfa">AI</text>
+      </g>
+      <g class="avatar-chip c2" transform="translate(228,60)">
+        <rect width="32" height="32" rx="8" fill="rgba(14,165,233,0.15)" stroke="#38bdf8" stroke-width="1.2"/>
+        <text x="16" y="21" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" fill="#38bdf8">{ }</text>
+      </g>
+      <g class="avatar-chip c3" transform="translate(232,160)">
+        <rect width="30" height="30" rx="8" fill="rgba(16,185,129,0.15)" stroke="#34d399" stroke-width="1.2"/>
+        <text x="15" y="20" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#34d399">λ</text>
+      </g>
+      <defs>
+        <linearGradient id="hoodieGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0ea5e9"/>
+          <stop offset="100%" stop-color="#123354" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+
   <div class="hero-content">
     <div class="hero-tag">// WELCOME TO MY PORTFOLIO</div>
     <h1 class="hero-name">
@@ -975,8 +1202,8 @@ footer span { color: var(--primary); }
       <div class="project-card reveal" data-cat="data">
         <div class="project-card-glow"></div>
         <span class="project-type data">DATA ANALYTICS</span>
-        <div class="project-title">Supportlytics — IT Support Analytics</div>
-        <div class="project-desc">Analyzed IT support tickets using EDA and clustering (similarity scores) to surface performance trends, resolution bottlenecks and built interactive dashboards delivering operational insights.</div>
+        <div class="project-title">Supportlytics — IT Support Ticket Analytics & Visualization</div>
+        <div class="project-desc">A data visualization and analytics project analyzing IT support ticket data to uncover performance trends, optimize resolution times, and improve service efficiency — combining data preprocessing, EDA, clustering (similarity scores), and interactive dashboards. Explores ticket volume, priority, resolution time, and issue-category trends; identifies clusters of similar issues; and delivers a final analytical report recommending workflow and resource-allocation improvements.</div>
         <div class="project-tech">
           <span class="tech-tag">Python</span><span class="tech-tag">Pandas</span><span class="tech-tag">Power BI</span><span class="tech-tag">Clustering</span><span class="tech-tag">EDA</span>
         </div>
@@ -1047,147 +1274,228 @@ footer span { color: var(--primary); }
     <div class="section-header reveal">
       <div class="section-eyebrow">// CERTIFICATIONS</div>
       <h2 class="section-title">Credentials</h2>
+      <p class="certs-hint">Tap any card to view the actual certificate ↓</p>
     </div>
     <div class="certs-grid">
 
-      <div class="cert-card reveal">
+      <div class="cert-card reveal" data-cert="se_intern" tabindex="0">
         <div class="cert-icon hackerrank">🟩</div>
         <div class="cert-info">
           <div class="cert-name">Software Engineer Intern Role</div>
           <div class="cert-issuer">HackerRank</div>
           <div class="cert-date">July 2026 · ID: C3128AC124C3</div>
         </div>
+        <div class="cert-view">⤢</div>
       </div>
 
-      <div class="cert-card reveal">
+      <div class="cert-card reveal" data-cert="internship" tabindex="0">
         <div class="cert-icon infosys">🔵</div>
         <div class="cert-info">
           <div class="cert-name">Supportlytics — Data Analytics Internship</div>
           <div class="cert-issuer">Infosys Springboard</div>
           <div class="cert-date">Dec 2025 – Feb 2026</div>
         </div>
+        <div class="cert-view">⤢</div>
       </div>
 
-      <div class="cert-card reveal">
+      <div class="cert-card reveal" data-cert="scaler_python" tabindex="0">
         <div class="cert-icon google">🟨</div>
         <div class="cert-info">
           <div class="cert-name">Python Course for Beginners (Certificate of Excellence)</div>
           <div class="cert-issuer">Scaler Topics</div>
           <div class="cert-date">April 20, 2025 · 121 Videos · 16 Modules</div>
         </div>
+        <div class="cert-view">⤢</div>
       </div>
 
-      <div class="cert-card reveal">
+      <div class="cert-card reveal" data-cert="biz_intel" tabindex="0">
         <div class="cert-icon infosys">🔵</div>
         <div class="cert-info">
           <div class="cert-name">Introduction to Business Intelligence</div>
           <div class="cert-issuer">Infosys Springboard</div>
           <div class="cert-date">June 19, 2025</div>
         </div>
+        <div class="cert-view">⤢</div>
       </div>
 
-      <div class="cert-card reveal">
+      <div class="cert-card reveal" data-cert="multidim" tabindex="0">
         <div class="cert-icon infosys">🔵</div>
         <div class="cert-info">
           <div class="cert-name">Multidimensional Data Modeling</div>
           <div class="cert-issuer">Infosys Springboard</div>
           <div class="cert-date">June 19, 2025</div>
         </div>
+        <div class="cert-view">⤢</div>
       </div>
 
-      <div class="cert-card reveal">
+      <div class="cert-card reveal" data-cert="dbms_sci" tabindex="0">
         <div class="cert-icon infosys">🔵</div>
         <div class="cert-info">
-          <div class="cert-name">Database Management System (55 hrs)</div>
+          <div class="cert-name">Database Management System – Science Graduates (55 hrs)</div>
           <div class="cert-issuer">Infosys Springboard</div>
           <div class="cert-date">June 26, 2025</div>
         </div>
+        <div class="cert-view">⤢</div>
       </div>
 
-      <div class="cert-card reveal">
+      <div class="cert-card reveal" data-cert="cyber_tata" tabindex="0">
         <div class="cert-icon forage">🟣</div>
         <div class="cert-info">
           <div class="cert-name">Cybersecurity Analyst Job Simulation (TATA)</div>
           <div class="cert-issuer">Forage · TATA Consultancy</div>
           <div class="cert-date">February 9, 2025 · IAM Fundamentals</div>
         </div>
+        <div class="cert-view">⤢</div>
       </div>
 
-      <div class="cert-card reveal">
+      <div class="cert-card reveal" data-cert="cyber_mc" tabindex="0">
         <div class="cert-icon forage">🟣</div>
         <div class="cert-info">
           <div class="cert-name">Cybersecurity Job Simulation (Mastercard)</div>
           <div class="cert-issuer">Forage · Mastercard</div>
           <div class="cert-date">February 10, 2025 · Phishing Simulation</div>
         </div>
+        <div class="cert-view">⤢</div>
       </div>
 
-      <div class="cert-card reveal">
+      <div class="cert-card reveal" data-cert="myjobgrow" tabindex="0">
         <div class="cert-icon other">🟢</div>
         <div class="cert-info">
           <div class="cert-name">Data Science & Machine Learning</div>
           <div class="cert-issuer">My Job Grow (ISO 9001 Certified)</div>
           <div class="cert-date">February 2025 · 15 Hours</div>
         </div>
+        <div class="cert-view">⤢</div>
       </div>
 
-      <div class="cert-card reveal">
+      <div class="cert-card reveal" data-cert="java_basic" tabindex="0">
         <div class="cert-icon hackerrank">🟩</div>
         <div class="cert-info">
           <div class="cert-name">Java (Basic)</div>
           <div class="cert-issuer">HackerRank</div>
           <div class="cert-date">April 9, 2024 · ID: 6C14748B4643</div>
         </div>
+        <div class="cert-view">⤢</div>
       </div>
 
-      <div class="cert-card reveal">
+      <div class="cert-card reveal" data-cert="javascript" tabindex="0">
         <div class="cert-icon infosys">🔵</div>
         <div class="cert-info">
           <div class="cert-name">JavaScript</div>
           <div class="cert-issuer">Infosys Springboard</div>
           <div class="cert-date">February 6, 2025</div>
         </div>
+        <div class="cert-view">⤢</div>
       </div>
 
-      <div class="cert-card reveal">
+      <div class="cert-card reveal" data-cert="html5" tabindex="0">
         <div class="cert-icon infosys">🔵</div>
         <div class="cert-info">
           <div class="cert-name">HTML5 – The Language</div>
           <div class="cert-issuer">Infosys Springboard</div>
           <div class="cert-date">January 29, 2025</div>
         </div>
+        <div class="cert-view">⤢</div>
       </div>
 
-      <div class="cert-card reveal">
+      <div class="cert-card reveal" data-cert="css3" tabindex="0">
         <div class="cert-icon infosys">🔵</div>
         <div class="cert-info">
           <div class="cert-name">CSS3</div>
           <div class="cert-issuer">Infosys Springboard</div>
           <div class="cert-date">February 6, 2025</div>
         </div>
+        <div class="cert-view">⤢</div>
       </div>
 
-      <div class="cert-card reveal">
+      <div class="cert-card reveal" data-cert="basic_python" tabindex="0">
         <div class="cert-icon infosys">🔵</div>
         <div class="cert-info">
-          <div class="cert-name">Basics of Python & Design Thinking</div>
+          <div class="cert-name">Basics of Python</div>
           <div class="cert-issuer">Infosys Springboard</div>
-          <div class="cert-date">Dec 2024 – Jan 2025</div>
+          <div class="cert-date">December 9, 2024</div>
         </div>
+        <div class="cert-view">⤢</div>
       </div>
 
-      <div class="cert-card reveal">
+      <div class="cert-card reveal" data-cert="design_thinking" tabindex="0">
         <div class="cert-icon infosys">🔵</div>
         <div class="cert-info">
-          <div class="cert-name">Business Communication & Creative Confidence</div>
+          <div class="cert-name">Design Thinking</div>
           <div class="cert-issuer">Infosys Springboard</div>
-          <div class="cert-date">Jan – Feb 2025</div>
+          <div class="cert-date">December 27, 2024</div>
         </div>
+        <div class="cert-view">⤢</div>
+      </div>
+
+      <div class="cert-card reveal" data-cert="biz_comm" tabindex="0">
+        <div class="cert-icon infosys">🔵</div>
+        <div class="cert-info">
+          <div class="cert-name">Basics of Business Communication</div>
+          <div class="cert-issuer">Infosys Springboard</div>
+          <div class="cert-date">January 29, 2025</div>
+        </div>
+        <div class="cert-view">⤢</div>
+      </div>
+
+      <div class="cert-card reveal" data-cert="creative_conf" tabindex="0">
+        <div class="cert-icon infosys">🔵</div>
+        <div class="cert-info">
+          <div class="cert-name">Building Creative Confidence</div>
+          <div class="cert-issuer">Infosys Springboard</div>
+          <div class="cert-date">February 19, 2025</div>
+        </div>
+        <div class="cert-view">⤢</div>
+      </div>
+
+      <div class="cert-card reveal" data-cert="self_conf" tabindex="0">
+        <div class="cert-icon infosys">🔵</div>
+        <div class="cert-info">
+          <div class="cert-name">Unleashing Your Self-Confidence</div>
+          <div class="cert-issuer">Infosys Springboard</div>
+          <div class="cert-date">February 19, 2025</div>
+        </div>
+        <div class="cert-view">⤢</div>
+      </div>
+
+      <div class="cert-card reveal" data-cert="flipkart" tabindex="0">
+        <div class="cert-icon other">🟡</div>
+        <div class="cert-info">
+          <div class="cert-name">Flipkart Runway: Season 5 — Online Assessment</div>
+          <div class="cert-issuer">Unstop · Flipkart</div>
+          <div class="cert-date">Certificate of Participation</div>
+        </div>
+        <div class="cert-view">⤢</div>
+      </div>
+
+      <div class="cert-card reveal" data-cert="tata_quiz" tabindex="0">
+        <div class="cert-icon other">🔴</div>
+        <div class="cert-info">
+          <div class="cert-name">Tata Quiz — Tata Imagination Challenge 2025</div>
+          <div class="cert-issuer">Unstop · Tata Group</div>
+          <div class="cert-date">Certificate of Participation</div>
+        </div>
+        <div class="cert-view">⤢</div>
       </div>
 
     </div>
   </div>
 </section>
+
+<!-- CERT MODAL -->
+<div class="cert-modal-overlay" id="certModalOverlay">
+  <div class="cert-modal">
+    <button class="cert-modal-close" id="certModalClose" aria-label="Close">✕</button>
+    <div class="cert-modal-header">
+      <div class="cert-modal-name" id="certModalName"></div>
+      <div class="cert-modal-issuer" id="certModalIssuer"></div>
+    </div>
+    <div class="cert-modal-imgwrap">
+      <img id="certModalImg" src="" alt="Certificate">
+    </div>
+    <a id="certModalOpen" href="#" target="_blank" class="cert-modal-openbtn">⤢ Open Full Size in New Tab</a>
+  </div>
+</div>
 
 <!-- ACHIEVEMENTS -->
 <section id="achievements">
@@ -1272,191 +1580,3 @@ footer span { color: var(--primary); }
   <p>Designed & Built by <span>Priya Janardhan Shet</span> · <span>© 2025</span> · Bengaluru, India 🇮🇳</p>
   <p style="margin-top:0.5rem">Made with <span>❤️</span> and a lot of <span>Python</span></p>
 </footer>
-
-<script>
-// ======= PARTICLES =======
-const canvas = document.getElementById('particles-canvas');
-const ctx = canvas.getContext('2d');
-let particles = [];
-let W, H;
-
-function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-resize();
-window.addEventListener('resize', () => { resize(); init(); });
-
-function Particle() {
-  this.x = Math.random() * W;
-  this.y = Math.random() * H;
-  this.vx = (Math.random() - 0.5) * 0.5;
-  this.vy = (Math.random() - 0.5) * 0.5;
-  this.r = Math.random() * 1.5 + 0.5;
-  this.alpha = Math.random() * 0.5 + 0.1;
-}
-Particle.prototype.update = function() {
-  this.x += this.vx; this.y += this.vy;
-  if (this.x < 0) this.x = W;
-  if (this.x > W) this.x = 0;
-  if (this.y < 0) this.y = H;
-  if (this.y > H) this.y = 0;
-};
-
-function init() {
-  particles = [];
-  const count = Math.floor((W * H) / 12000);
-  for (let i = 0; i < count; i++) particles.push(new Particle());
-}
-init();
-
-let mouse = { x: -999, y: -999 };
-document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-
-function drawParticles() {
-  ctx.clearRect(0, 0, W, H);
-  // Draw connections
-  for (let i = 0; i < particles.length; i++) {
-    for (let j = i + 1; j < particles.length; j++) {
-      const dx = particles[i].x - particles[j].x;
-      const dy = particles[i].y - particles[j].y;
-      const dist = Math.sqrt(dx*dx + dy*dy);
-      if (dist < 120) {
-        ctx.beginPath();
-        ctx.moveTo(particles[i].x, particles[i].y);
-        ctx.lineTo(particles[j].x, particles[j].y);
-        ctx.strokeStyle = `rgba(14,165,233,${0.12 * (1 - dist/120)})`;
-        ctx.lineWidth = 0.5;
-        ctx.stroke();
-      }
-    }
-    // Mouse interaction
-    const dx = particles[i].x - mouse.x;
-    const dy = particles[i].y - mouse.y;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    if (dist < 150) {
-      ctx.beginPath();
-      ctx.moveTo(particles[i].x, particles[i].y);
-      ctx.lineTo(mouse.x, mouse.y);
-      ctx.strokeStyle = `rgba(56,189,248,${0.2 * (1 - dist/150)})`;
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
-    }
-  }
-  // Draw dots
-  particles.forEach(p => {
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(14,165,233,${p.alpha})`;
-    ctx.fill();
-    p.update();
-  });
-  requestAnimationFrame(drawParticles);
-}
-drawParticles();
-
-// ======= TYPING ANIMATION =======
-const phrases = [
-  "AI/ML Engineer 🤖",
-  "IoT Specialist 📡",
-  "Data Analyst 📊",
-  "Multi-Agent Builder 🚀",
-  "Cloud Enthusiast ☁️",
-  "GATE 2026 Qualified ⚡"
-];
-let phraseIdx = 0, charIdx = 0, deleting = false;
-const typedEl = document.getElementById('typed-text');
-
-function typeLoop() {
-  const current = phrases[phraseIdx];
-  if (!deleting) {
-    typedEl.textContent = current.slice(0, ++charIdx);
-    if (charIdx === current.length) { deleting = true; setTimeout(typeLoop, 1800); return; }
-    setTimeout(typeLoop, 65);
-  } else {
-    typedEl.textContent = current.slice(0, --charIdx);
-    if (charIdx === 0) { deleting = false; phraseIdx = (phraseIdx + 1) % phrases.length; }
-    setTimeout(typeLoop, 35);
-  }
-}
-setTimeout(typeLoop, 1400);
-
-// ======= SCROLL REVEAL =======
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((e, i) => {
-    if (e.isIntersecting) {
-      setTimeout(() => e.target.classList.add('active'), i * 80);
-    }
-  });
-}, { threshold: 0.08 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-// ======= COUNTER ANIMATION =======
-function animateCounter(el) {
-  const target = parseInt(el.dataset.target);
-  const duration = 1800;
-  const start = Date.now();
-  const tick = () => {
-    const p = Math.min((Date.now() - start) / duration, 1);
-    const ease = 1 - Math.pow(1 - p, 3);
-    el.textContent = Math.round(ease * target);
-    if (p < 1) requestAnimationFrame(tick);
-    else el.textContent = target;
-  };
-  tick();
-}
-const countObs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      animateCounter(e.target);
-      countObs.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.5 });
-document.querySelectorAll('.stat-num[data-target]').forEach(el => countObs.observe(el));
-
-// ======= PROJECT FILTER =======
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const filter = btn.dataset.filter;
-    document.querySelectorAll('.project-card').forEach(card => {
-      if (filter === 'all' || card.dataset.cat === filter) {
-        card.style.display = 'block';
-        card.style.animation = 'fadeUp 0.4s ease forwards';
-      } else {
-        card.style.display = 'none';
-      }
-    });
-  });
-});
-
-// ======= NAV SCROLL EFFECT =======
-window.addEventListener('scroll', () => {
-  const nav = document.getElementById('navbar');
-  if (window.scrollY > 80) {
-    nav.style.background = 'rgba(6,11,20,0.97)';
-    nav.style.boxShadow = '0 4px 30px rgba(14,165,233,0.1)';
-  } else {
-    nav.style.background = 'rgba(6,11,20,0.85)';
-    nav.style.boxShadow = 'none';
-  }
-});
-
-// ======= TILT EFFECT ON CARDS =======
-document.querySelectorAll('.project-card').forEach(card => {
-  card.addEventListener('mousemove', e => {
-    const rect = card.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * -10;
-    card.style.transform = `translateY(-6px) rotateY(${x}deg) rotateX(${y}deg)`;
-  });
-  card.addEventListener('mouseleave', () => {
-    card.style.transform = '';
-    card.style.transition = 'transform 0.5s ease';
-  });
-  card.addEventListener('mouseenter', () => {
-    card.style.transition = 'transform 0.1s';
-  });
-});
-</script>
-</body>
-</html>
